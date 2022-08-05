@@ -22,6 +22,17 @@ defmodule Capsule.ObanJobTest do
              |> Capsule.fetch("dep_key") == {:ok, "dep_value"}
     end
 
+    test "allows setting multiple key-value pairs" do
+      job =
+        TestWorker.new(%{})
+        |> Capsule.put("dep1", "value1")
+        |> Capsule.put("dep2", "value2")
+        |> fake_insert!()
+
+      assert Capsule.fetch(job, "dep1") == {:ok, "value1"}
+      assert Capsule.fetch(job, "dep2") == {:ok, "value2"}
+    end
+
     test "returns :error if key-value pair HAS NOT BEEN set after Worker.new" do
       assert TestWorker.new(%{arg1: 1})
              |> fake_insert!()

@@ -12,6 +12,16 @@ defmodule Capsule.PlugConnTest do
              |> Capsule.fetch(:dep_key) == {:ok, :dep_value}
     end
 
+    test "allows setting multiple key-value pairs" do
+      conn =
+        build_conn()
+        |> Capsule.put(:dep1, :value1)
+        |> Capsule.put("dep2", "value2")
+
+      assert Capsule.fetch(conn, :dep1) == {:ok, :value1}
+      assert Capsule.fetch(conn, "dep2") == {:ok, "value2"}
+    end
+
     test "returns :error if the key-value pair HAS NOT been put" do
       assert build_conn()
              |> Capsule.fetch(:dep_key) == :error
