@@ -16,5 +16,15 @@ defmodule Capsule.PlugConnTest do
       assert build_conn()
              |> Capsule.fetch(:dep_key) == :error
     end
+
+    test "does not overwrite previous set private value" do
+      conn =
+        build_conn()
+        |> Plug.Conn.put_private(:dep_key, :original_value)
+        |> Capsule.put(:dep_key, :dep_value)
+
+      assert conn.private[:dep_key] == :original_value
+      assert Capsule.fetch(conn, :dep_key) == {:ok, :dep_value}
+    end
   end
 end
