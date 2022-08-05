@@ -10,14 +10,12 @@ end
 
 defimpl Capsule.Capsulable, for: Any do
   def put(%Ecto.Changeset{data: %Oban.Job{}} = oban_job_changeset, key, value) do
-    serialized_value = serialize(value)
-
     old_args = Ecto.Changeset.get_field(oban_job_changeset, :args, %{})
 
     new_capsule =
       old_args
       |> Map.get("__capsule__", %{})
-      |> put_in_capsule(key, serialized_value)
+      |> put_in_capsule(key, serialize(value))
 
     new_args = Map.put(old_args, "__capsule__", new_capsule)
 
