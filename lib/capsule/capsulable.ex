@@ -14,26 +14,23 @@ defimpl Capsule.Capsulable, for: Any do
 
     old_args = Ecto.Changeset.get_field(oban_job_changeset, :args, %{})
 
-    new_args =
-      case old_args[:__capsule__] do
-        nil ->
-          Map.put(old_args, :__capsule__, %{key => serialized_value})
+    new_capsule =
+      old_args
+      |> Map.get(:__capsule__, %{})
+      |> put_in_capsule(key, serialized_value)
 
-        capsule ->
-          Map.put(old_args, :__capsule__, Map.merge(capsule, %{key => serialized_value}))
-      end
+    new_args = Map.put(old_args, :__capsule__, new_capsule)
 
     Ecto.Changeset.put_change(oban_job_changeset, :args, new_args)
   end
 
   def put(%Plug.Conn{} = conn, key, value) do
-    case conn.private[:__capsule__] do
-      nil ->
-        Plug.Conn.put_private(conn, :__capsule__, %{key => value})
+    new_capsule =
+      conn.private
+      |> Map.get(:__capsule__, %{})
+      |> put_in_capsule(key, value)
 
-      capsule ->
-        Plug.Conn.put_private(conn, :__capsule__, Map.merge(capsule, %{key => value}))
-    end
+    Plug.Conn.put_private(conn, :__capsule__, new_capsule)
   end
 
   def put(any, _key, _value) do
@@ -45,16 +42,17 @@ defimpl Capsule.Capsulable, for: Any do
   end
 
   def fetch(%Plug.Conn{} = conn, key) do
-    case conn.private[:__capsule__] do
-      %{^key => value} -> {:ok, value}
-      _ -> :error
-    end
+    conn.private
+    |> Map.get(:__capsule__, %{})
+    |> fetch_from_capsule(key)
   end
 
   def fetch(%Oban.Job{} = oban_job, key) do
-    case oban_job.args["__capsule__"] do
-      %{^key => value} -> {:ok, deserialize(value)}
-      _ -> :error
+    with {:ok, value} <-
+           oban_job.args
+           |> Map.get("__capsule__", %{})
+           |> fetch_from_capsule(key) do
+      {:ok, deserialize(value)}
     end
   end
 
@@ -63,6 +61,17 @@ defimpl Capsule.Capsulable, for: Any do
       protocol: @protocol,
       value: any,
       description: "Capsule.fetch/2 by default only supports %Plug.Conn{} and %Oban.Job{}"
+  end
+
+  defp put_in_capsule(capsule, key, value) do
+    Map.merge(capsule, %{key => value})
+  end
+
+  defp fetch_from_capsule(capsule, key) do
+    case capsule do
+      %{^key => value} -> {:ok, value}
+      _ -> :error
+    end
   end
 
   defp serialize(term) do
