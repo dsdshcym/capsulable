@@ -43,6 +43,15 @@ defmodule Capsule.ObanJobTest do
       assert Capsule.fetch(job, "arg1") == {:ok, "dep_value"}
     end
 
+    test "stores and retrieves runtime values" do
+      pid = self()
+
+      assert TestWorker.new(%{})
+             |> Capsule.put("pid", pid)
+             |> fake_insert!()
+             |> Capsule.fetch("pid") == {:ok, pid}
+    end
+
     test "returns :error if key-value pair HAS NOT BEEN set after Worker.new" do
       assert TestWorker.new(%{arg1: 1})
              |> fake_insert!()
