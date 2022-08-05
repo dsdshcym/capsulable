@@ -33,6 +33,16 @@ defmodule Capsule.ObanJobTest do
       assert Capsule.fetch(job, "dep2") == {:ok, "value2"}
     end
 
+    test "does not overwrite user's arguments in job.args" do
+      job =
+        TestWorker.new(%{"arg1" => "original_value"})
+        |> Capsule.put("arg1", "dep_value")
+        |> fake_insert!()
+
+      assert job.args["arg1"] == "original_value"
+      assert Capsule.fetch(job, "arg1") == {:ok, "dep_value"}
+    end
+
     test "returns :error if key-value pair HAS NOT BEEN set after Worker.new" do
       assert TestWorker.new(%{arg1: 1})
              |> fake_insert!()
