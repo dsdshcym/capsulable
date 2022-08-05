@@ -16,10 +16,10 @@ defimpl Capsule.Capsulable, for: Any do
 
     new_capsule =
       old_args
-      |> Map.get(:__capsule__, %{})
+      |> Map.get("__capsule__", %{})
       |> put_in_capsule(key, serialized_value)
 
-    new_args = Map.put(old_args, :__capsule__, new_capsule)
+    new_args = Map.put(old_args, "__capsule__", new_capsule)
 
     Ecto.Changeset.put_change(oban_job_changeset, :args, new_args)
   end
