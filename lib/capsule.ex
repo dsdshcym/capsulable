@@ -6,16 +6,20 @@ defmodule Capsule do
 
   - Returns {:ok, value} if key-value has been set:
 
+    ```
     iex> TestCapsulable.new()
     iex> |> Capsule.put(:a, 1)
     iex> |> Capsule.fetch(:a)
     {:ok, 1}
+    ```
 
   - Returns :error if key-value has NOT been set:
 
+    ```
     iex> TestCapsulable.new()
     iex> |> Capsule.fetch(:a)
     :error
+    ```
   """
   defdelegate fetch(capsulable, key), to: Capsule.Capsulable
 
@@ -24,17 +28,21 @@ defmodule Capsule do
 
   - Returns value if key-value has been set:
 
+    ```
     iex> TestCapsulable.new()
     iex> |> Capsule.put(:a, 1)
     iex> |> Capsule.get(:a, :default_value)
     1
+    ```
 
   - Returns value generated from default_fn if key-value has NOT been set:
 
+    ```
     iex> TestCapsulable.new()
     iex> |> Capsule.put(:a, 1)
     iex> |> Capsule.get(:b, :default_value)
     :default_value
+    ```
   """
   def get(capsulable, key, default) do
     case Capsule.Capsulable.fetch(capsulable, key) do
@@ -48,16 +56,20 @@ defmodule Capsule do
 
   - Returns value if key-value has been set:
 
+    ```
     iex> TestCapsulable.new()
     iex> |> Capsule.put(:a, 1)
     iex> |> Capsule.get_lazy(:a, fn -> raise("default_fn should not be called") end)
     1
+    ```
 
   - Returns value generated from default_fn if key-value has NOT been set:
 
+    ```
     iex> TestCapsulable.new()
     iex> |> Capsule.get_lazy(:a, fn -> 2 end)
     2
+    ```
   """
   def get_lazy(capsulable, key, default_fn) do
     case Capsule.Capsulable.fetch(capsulable, key) do
