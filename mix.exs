@@ -3,6 +3,9 @@ defmodule Capsule.MixProject do
 
   def project do
     [
+      name: "Capsule",
+      description: "Protocol-based dependency-injection solution for Elixir",
+      package: package(),
       app: :capsule,
       version: "0.1.0",
       elixir: "~> 1.0",
@@ -17,6 +20,14 @@ defmodule Capsule.MixProject do
     [
       extra_applications: [:logger]
     ]
+  end
+
+  defp package do
+    %{
+      licenses: ["Apache-2.0"],
+      maintainers: ["Yiming Chen"],
+      links: %{"GitHub" => "https://github.com/dsdshcym/capsule"}
+    }
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
