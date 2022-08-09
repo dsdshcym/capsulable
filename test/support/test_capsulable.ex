@@ -1,17 +1,17 @@
 defmodule TestCapsulable do
-  defstruct capsule: %{}
+  defstruct capsulable: %{}
 
   def new do
-    %TestCapsulable{capsule: %{}}
+    %TestCapsulable{capsulable: %{}}
   end
 end
 
-defimpl Capsule.Capsulable, for: TestCapsulable do
+defimpl Capsulable, for: TestCapsulable do
   def put(capsulable, key, value) do
-    %TestCapsulable{capsule: Map.put(capsulable.capsule, key, value)}
+    %TestCapsulable{capsulable: Map.put(capsulable.capsulable, key, value)}
   end
 
   def fetch(capsulable, key) do
-    Map.fetch(capsulable.capsule, key)
+    Map.fetch(capsulable.capsulable, key)
   end
 end

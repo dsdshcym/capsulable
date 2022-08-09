@@ -1,12 +1,12 @@
-defmodule Capsule.MixProject do
+defmodule Capsulable.MixProject do
   use Mix.Project
 
   def project do
     [
-      name: "Capsule",
+      name: "Capsulable",
       description: "Protocol-based dependency-injection solution for Elixir",
       package: package(),
-      app: :capsule,
+      app: :capsulable,
       version: "0.1.0",
       elixir: "~> 1.0",
       start_permanent: Mix.env() == :prod,
@@ -26,7 +26,7 @@ defmodule Capsule.MixProject do
     %{
       licenses: ["Apache-2.0"],
       maintainers: ["Yiming Chen"],
-      links: %{"GitHub" => "https://github.com/dsdshcym/capsule"}
+      links: %{"GitHub" => "https://github.com/dsdshcym/capsulable"}
     }
   end
 
