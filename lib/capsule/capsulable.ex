@@ -9,17 +9,19 @@ defprotocol Capsule.Capsulable do
 end
 
 defimpl Capsule.Capsulable, for: Any do
-  def put(%Ecto.Changeset{data: %Oban.Job{}} = oban_job_changeset, key, value) do
-    old_meta = Ecto.Changeset.get_field(oban_job_changeset, :meta, %{})
+  if Code.ensure_loaded?(Oban.Job) && Code.ensure_loaded?(Ecto.Changeset) do
+    def put(%Ecto.Changeset{data: %Oban.Job{}} = oban_job_changeset, key, value) do
+      old_meta = Ecto.Changeset.get_field(oban_job_changeset, :meta, %{})
 
-    new_capsule =
-      old_meta
-      |> Map.get("__capsule__", %{})
-      |> put_in_capsule(key, serialize(value))
+      new_capsule =
+        old_meta
+        |> Map.get("__capsule__", %{})
+        |> put_in_capsule(key, serialize(value))
 
-    new_meta = Map.put(old_meta, "__capsule__", new_capsule)
+      new_meta = Map.put(old_meta, "__capsule__", new_capsule)
 
-    Ecto.Changeset.put_change(oban_job_changeset, :meta, new_meta)
+      Ecto.Changeset.put_change(oban_job_changeset, :meta, new_meta)
+    end
   end
 
   if Code.ensure_loaded?(Plug.Conn) do
@@ -49,12 +51,14 @@ defimpl Capsule.Capsulable, for: Any do
     end
   end
 
-  def fetch(%Oban.Job{} = oban_job, key) do
-    with {:ok, value} <-
-           oban_job.meta
-           |> Map.get("__capsule__", %{})
-           |> fetch_from_capsule(key) do
-      {:ok, deserialize(value)}
+  if Code.ensure_loaded?(Oban.Job) do
+    def fetch(%Oban.Job{} = oban_job, key) do
+      with {:ok, value} <-
+             oban_job.meta
+             |> Map.get("__capsule__", %{})
+             |> fetch_from_capsule(key) do
+        {:ok, deserialize(value)}
+      end
     end
   end
 
