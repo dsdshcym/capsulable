@@ -1,5 +1,22 @@
 defmodule Capsule do
   defdelegate put(capsulable, key, value), to: Capsule.Capsulable
+
+  @doc """
+  Capsule.fetch(capsulable, key)
+
+  - Returns {:ok, value} if key-value has been set:
+
+    iex> TestCapsulable.new()
+    iex> |> Capsule.put(:a, 1)
+    iex> |> Capsule.fetch(:a)
+    {:ok, 1}
+
+  - Returns :error if key-value has NOT been set:
+
+    iex> TestCapsulable.new()
+    iex> |> Capsule.fetch(:a)
+    :error
+  """
   defdelegate fetch(capsulable, key), to: Capsule.Capsulable
 
   @doc """
