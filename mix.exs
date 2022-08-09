@@ -36,6 +36,7 @@ defmodule Capsule.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:oban, ">= 0.0.0", optional: true},
       {:plug, ">= 0.8.0", optional: true}
       # {:dep_from_hexpm, "~> 0.3.0"},
