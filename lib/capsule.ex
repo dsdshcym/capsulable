@@ -20,6 +20,30 @@ defmodule Capsule do
   defdelegate fetch(capsulable, key), to: Capsule.Capsulable
 
   @doc """
+  Capsule.get(capsulable, key, default)
+
+  - Returns value if key-value has been set:
+
+    iex> TestCapsulable.new()
+    iex> |> Capsule.put(:a, 1)
+    iex> |> Capsule.get(:a, :default_value)
+    1
+
+  - Returns value generated from default_fn if key-value has NOT been set:
+
+    iex> TestCapsulable.new()
+    iex> |> Capsule.put(:a, 1)
+    iex> |> Capsule.get(:b, :default_value)
+    :default_value
+  """
+  def get(capsulable, key, default) do
+    case Capsule.Capsulable.fetch(capsulable, key) do
+      {:ok, value} -> value
+      :error -> default
+    end
+  end
+
+  @doc """
   Capsule.get_lazy(capsulable, key, default_fn)
 
   - Returns value if key-value has been set:
