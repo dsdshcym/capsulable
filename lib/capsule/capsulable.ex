@@ -22,13 +22,15 @@ defimpl Capsule.Capsulable, for: Any do
     Ecto.Changeset.put_change(oban_job_changeset, :meta, new_meta)
   end
 
-  def put(%Plug.Conn{} = conn, key, value) do
-    new_capsule =
-      conn.private
-      |> Map.get(:__capsule__, %{})
-      |> put_in_capsule(key, value)
+  if Code.ensure_loaded?(Plug.Conn) do
+    def put(%Plug.Conn{} = conn, key, value) do
+      new_capsule =
+        conn.private
+        |> Map.get(:__capsule__, %{})
+        |> put_in_capsule(key, value)
 
-    Plug.Conn.put_private(conn, :__capsule__, new_capsule)
+      Plug.Conn.put_private(conn, :__capsule__, new_capsule)
+    end
   end
 
   def put(any, _key, _value) do
@@ -39,10 +41,12 @@ defimpl Capsule.Capsulable, for: Any do
         "Capsule.put/3 by default only supports %Plug.Conn{} and %Ecto.Changeset{data: %Oban.Job{}}"
   end
 
-  def fetch(%Plug.Conn{} = conn, key) do
-    conn.private
-    |> Map.get(:__capsule__, %{})
-    |> fetch_from_capsule(key)
+  if Code.ensure_loaded?(Plug.Conn) do
+    def fetch(%Plug.Conn{} = conn, key) do
+      conn.private
+      |> Map.get(:__capsule__, %{})
+      |> fetch_from_capsule(key)
+    end
   end
 
   def fetch(%Oban.Job{} = oban_job, key) do
