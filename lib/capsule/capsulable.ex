@@ -10,16 +10,16 @@ end
 
 defimpl Capsule.Capsulable, for: Any do
   def put(%Ecto.Changeset{data: %Oban.Job{}} = oban_job_changeset, key, value) do
-    old_args = Ecto.Changeset.get_field(oban_job_changeset, :args, %{})
+    old_meta = Ecto.Changeset.get_field(oban_job_changeset, :meta, %{})
 
     new_capsule =
-      old_args
+      old_meta
       |> Map.get("__capsule__", %{})
       |> put_in_capsule(key, serialize(value))
 
-    new_args = Map.put(old_args, "__capsule__", new_capsule)
+    new_meta = Map.put(old_meta, "__capsule__", new_capsule)
 
-    Ecto.Changeset.put_change(oban_job_changeset, :args, new_args)
+    Ecto.Changeset.put_change(oban_job_changeset, :meta, new_meta)
   end
 
   def put(%Plug.Conn{} = conn, key, value) do
@@ -47,7 +47,7 @@ defimpl Capsule.Capsulable, for: Any do
 
   def fetch(%Oban.Job{} = oban_job, key) do
     with {:ok, value} <-
-           oban_job.args
+           oban_job.meta
            |> Map.get("__capsule__", %{})
            |> fetch_from_capsule(key) do
       {:ok, deserialize(value)}
