@@ -74,8 +74,16 @@ defprotocol Capsulable do
     iex> |> Capsulable.get_lazy(:a, fn -> 2 end)
     2
     ```
+
+  - The `default_fn` arg has to be a 0-arity function
+
+    ```
+    iex> TestCapsulable.new()
+    iex> |> Capsulable.get_lazy(:a, fn _arg -> 2 end)
+    ** (FunctionClauseError) no function clause matching in Capsulable.get_lazy/3
+    ```
   """
-  Kernel.def get_lazy(capsulable, key, default_fn) do
+  Kernel.def get_lazy(capsulable, key, default_fn) when is_function(default_fn, 0) do
     case fetch(capsulable, key) do
       {:ok, value} -> value
       :error -> default_fn.()
